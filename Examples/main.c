@@ -3,43 +3,14 @@
 #include <dirent.h>
 #include <emscripten/emscripten.h>
 #include <stdlib.h>
-static Example *Examples[] = {&ClearScreen_Example,
-#if !(defined(SDL_PLATFORM_XBOXONE) || defined(SDL_PLATFORM_XBOXSERIES) ||     \
-      defined(__EMSCRIPTEN__))
-                              &ClearScreenMultiWindow_Example,
-#endif
-                              &BasicTriangle_Example,
-                              &BasicVertexBuffer_Example,
-                              &CullMode_Example,
-                              &BasicStencil_Example,
-                              &InstancedIndexed_Example,
-                              &TexturedQuad_Example,
-                              &TexturedAnimatedQuad_Example,
-                              &Clear3DSlice_Example,
-                              &BasicCompute_Example,
-                              &ComputeUniforms_Example,
-                              &ToneMapping_Example,
-                              &CustomSampling_Example,
-                              &DrawIndirect_Example,
-                              &ComputeSampler_Example,
-                              &CopyAndReadback_Example,
-                              &CopyConsistency_Example,
-                              &Texture2DArray_Example,
-                              &TriangleMSAA_Example,
-                              &Cubemap_Example,
-                              &WindowResize_Example,
-                              &Blit2DArray_Example,
-                              &BlitCube_Example,
-                              &BlitMirror_Example,
-                              &GenerateMipmaps_Example,
-                              &Latency_Example,
-                              &DepthSampler_Example,
-                              &DepthArray_Example,
-                              &ComputeSpriteBatch_Example,
-                              &PullSpriteBatch_Example,
-                              &TextureTypeTest_Example,
-                              &CompressedTextures_Example,
-                              &Bloom_Example};
+
+static Example *Examples[] = {
+    &ClearScreen_Example,       &BasicTriangle_Example,
+    &BasicVertexBuffer_Example, &CullMode_Example,
+    &BasicStencil_Example,      &InstancedIndexed_Example,
+    &TexturedQuad_Example,      &TexturedAnimatedQuad_Example,
+    &Clear3DSlice_Example,      &BasicCompute_Example,
+    &ComputeUniforms_Example,   &DrawIndirect_Example};
 
 bool AppLifecycleWatcher(void *userdata, SDL_Event *event) {
   /* This callback may be on a different thread, so let's
@@ -201,20 +172,6 @@ int main(int argc, char **argv) {
 
   SDL_Log("Welcome to the SDL_GPU example suite!");
   SDL_Log("Press A/D (or LB/RB) to move between examples!");
-
-  DIR *dir;
-  struct dirent *ent;
-  if ((dir = opendir("/Content/Shaders/Compiled/WGSL/")) != NULL) {
-    /* print all the files and directories within directory */
-    while ((ent = readdir(dir)) != NULL) {
-      SDL_LogInfo(SDL_LOG_CATEGORY_GPU, "Found file: %s\n", ent->d_name);
-    }
-    closedir(dir);
-  } else {
-    /* could not open directory */
-    SDL_LogError(SDL_LOG_CATEGORY_GPU, "Could not open directory!");
-    return EXIT_FAILURE;
-  }
 
   emscripten_set_main_loop(update, false, true);
   return 0;
