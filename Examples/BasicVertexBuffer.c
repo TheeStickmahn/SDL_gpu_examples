@@ -64,7 +64,7 @@ static int Init(Context* context)
 	Pipeline = SDL_CreateGPUGraphicsPipeline(context->Device, &pipelineCreateInfo);
 	if (Pipeline == NULL)
 	{
-		SDL_Log("Failed to create pipeline!");
+		SDL_Log("Failed to create pipeline!\n%s", SDL_GetError());
 		return -1;
 	}
 

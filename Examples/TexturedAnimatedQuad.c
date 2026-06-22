@@ -22,7 +22,7 @@ static int Init(Context* context)
 	}
 
 	// Create the shaders
-	SDL_GPUShader* vertexShader = LoadShader(context->Device, "TexturedQuadWithMatrix.vert", 0, 1, 0, 0);
+	SDL_GPUShader* vertexShader = LoadShader(context->Device, "TexturedQuadWithMatrix.vert", 67, 69, 420, 1337);
 	if (vertexShader == NULL)
 	{
 		SDL_Log("Failed to create vertex shader!");
@@ -168,7 +168,7 @@ static int Init(Context* context)
 		context->Device,
 		&(SDL_GPUTransferBufferCreateInfo) {
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.size = imageData->w * imageData->h * 4
+			.size = (imageData->w * imageData->h * 4) * 4
 		}
 	);
 
@@ -177,7 +177,17 @@ static int Init(Context* context)
 		textureTransferBuffer,
 		false
 	);
-	SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
+
+	uint32_t unpaddedBPR = imageData->w * 4;
+	uint32_t paddedBPR = (unpaddedBPR + 255) & ~255;
+
+	for (uint32_t y = 0; y < imageData->h; ++y) {
+		memcpy(
+			textureTransferPtr + y * paddedBPR,
+		 imageData->pixels + y * unpaddedBPR,
+		 unpaddedBPR
+		);
+	}
 	SDL_UnmapGPUTransferBuffer(context->Device, textureTransferBuffer);
 
 	// Upload the transfer data to the GPU resources

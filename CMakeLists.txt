@@ -1,20 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 project(SDL_gpu_examples)
-find_package(SDL3 CONFIG QUIET)
 
-if(NOT SDL3_FOUND)
-    message(STATUS "SDL3 not found. Building it from source.")
-    include(FetchContent)
-    FetchContent_Declare(
-            SDL
-            GIT_REPOSITORY https://github.com/libsdl-org/SDL
-            GIT_TAG        "release-3.2.16"
-    )
-    FetchContent_MakeAvailable(SDL)
-else()
-    find_package(SDL3 REQUIRED)
-endif()
+set(CMAKE_C_STANDARD 23)
 
+set(SDL_WGPU_LIB "dawn")
+set(SDL_WGPU_STATIC ON)
+set(SDL_WGPU_LIB_BYO ON)
+
+add_subdirectory(extern/SDL)
 add_executable(SDL_gpu_examples
     Examples/main.c
     Examples/Common.h
@@ -56,10 +49,16 @@ add_executable(SDL_gpu_examples
     Examples/Bloom.c
 )
 
-target_link_libraries(SDL_gpu_examples
-    SDL3::SDL3
+add_custom_command(TARGET SDL_gpu_examples PRE_LINK
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Content $<TARGET_FILE_DIR:SDL_gpu_examples>/Content
 )
 
-add_custom_command(TARGET SDL_gpu_examples POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Content $<TARGET_FILE_DIR:SDL_gpu_examples>/Content
+target_compile_options(SDL_gpu_examples PRIVATE "--use-port=emdawnwebgpu")
+set_target_properties(SDL_gpu_examples PROPERTIES SUFFIX ".html")
+target_link_libraries(SDL_gpu_examples PRIVATE SDL3::SDL3)
+target_link_options(SDL_gpu_examples PRIVATE
+    "-sASYNCIFY=1"
+    "-sALLOW_MEMORY_GROWTH=1"
+    "--use-port=emdawnwebgpu"
+    "--preload-file" "Content/"
 )

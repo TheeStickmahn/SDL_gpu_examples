@@ -126,7 +126,7 @@ static int Init(Context* context)
 		.height = h,
 		.layer_count_or_depth = 1,
 		.num_levels = 1,
-		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
+		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_WRITE
 	});
 
 	TransferTexture = SDL_CreateGPUTexture(context->Device, &(SDL_GPUTextureCreateInfo){

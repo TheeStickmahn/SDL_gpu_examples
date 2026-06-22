@@ -5,8 +5,45 @@ static int Init(Context* context)
 	return CommonInit(context, SDL_WINDOW_RESIZABLE);
 }
 
+static float r = 1.0f, g = 0.0f, b = 0.0f;
+static int phase = 0;
+
+constexpr float speed = 0.0035f;
+
 static int Update(Context* context)
 {
+	switch (phase) {
+		case 0:
+			g += speed;
+			if (g >= 1.0f)
+				phase = 1;
+		break; // red -> yellow
+		case 1:
+			r -= speed;
+			if (r <= 0.0f)
+				phase = 2;
+		break; // yellow -> green
+		case 2:
+			b += speed;
+			if (b >= 1.0f)
+				phase = 3;
+		break; // green -> cyan
+		case 3:
+			g -= speed;
+			if (g <= 0.0f)
+				phase = 4;
+		break; // cyan -> blue
+		case 4:
+			r += speed;
+			if (r >= 1.0f)
+				phase = 5;
+		break; // blue -> magenta
+		case 5:
+			b -= speed;
+			if (b <= 0.0f)
+				phase = 0;
+		break; // magenta -> red
+	}
 	return 0;
 }
 
@@ -29,7 +66,7 @@ static int Draw(Context* context)
 	{
 		SDL_GPUColorTargetInfo colorTargetInfo = { 0 };
 		colorTargetInfo.texture = swapchainTexture;
-		colorTargetInfo.clear_color = (SDL_FColor){ 0.3f, 0.4f, 0.5f, 1.0f };
+		colorTargetInfo.clear_color = (SDL_FColor){ r, g, b, 1.0f };
 		colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
 		colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
 
